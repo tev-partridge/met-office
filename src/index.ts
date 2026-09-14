@@ -40,5 +40,6 @@ const nextThreeHours = timeSeries
     .slice(0, 3);
 
 for (const entry of nextThreeHours) {
-    console.log(`${entry.time}: ${entry.screenTemperature}°C, ${entry.significantWeatherCode}`);
+    const time = new Date(entry.time).toLocaleString("en-GB", { "hour": "numeric", "minute": "2-digit" });
+    console.log(`${time}: ${entry.screenTemperature}°C, ${entry.significantWeatherCode}`);
 }
