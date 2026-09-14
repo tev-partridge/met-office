@@ -24,13 +24,21 @@ const fetchWeather = async (latitude: string, longitude: string) => {
         if (!response.ok) {
             throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`);
         }
-        const json = await response.json();
-        console.log(JSON.stringify(json, null, 2));
+        return await response.json();
     } catch (e) {
         console.error(e);
-    } finally {
-        console.log("Fetched Weather");
     }
 }
 
-await fetchWeather(latitude, longitude);
+const weatherJson = await fetchWeather(latitude, longitude);
+
+const timeSeries = weatherJson.features[0].properties.timeSeries;
+
+const now = new Date();
+const nextThreeHours = timeSeries
+    .filter((entry: any) => new Date(entry.time) >= now)
+    .slice(0, 3);
+
+for (const entry of nextThreeHours) {
+    console.log(`${entry.time}: ${entry.screenTemperature}°C, ${entry.significantWeatherCode}`);
+}
