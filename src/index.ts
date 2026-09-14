@@ -32,22 +32,29 @@ const fetchWeather = async (latitude: string, longitude: string) => {
 
 const weatherJson = await fetchWeather(latitude, longitude);
 
-const timeSeries = weatherJson.features[0].properties.timeSeries;
+const outputWeather = (timeSeries: any) => {
+    const now = new Date();
+    const nextThreeHours = timeSeries
+        .filter((entry: any) => new Date(entry.time) >= now)
+        .slice(0, 3);
 
-const now = new Date();
-const nextThreeHours = timeSeries
-    .filter((entry: any) => new Date(entry.time) >= now)
-    .slice(0, 3);
+    for (const entry of nextThreeHours) {
+        const time = new Date(entry.time).toLocaleString("en-GB", { "hour": "numeric", "minute": "2-digit" });
+        let message: string = `${time}: ${entry.screenTemperature}°C`;
 
-for (const entry of nextThreeHours) {
-    const time = new Date(entry.time).toLocaleString("en-GB", { "hour": "numeric", "minute": "2-digit" });
-    let message: string = `${time}: ${entry.screenTemperature}°C`;
+        const weatherCode = entry.significantWeatherCode;
 
-    const weatherCode = entry.significantWeatherCode;
+        if (weatherCode >= 9) {
+            message += " - Might be wet so bring an umbrella!";
+        }
 
-    if (weatherCode >= 9) {
-        message += " - Might be wet so bring an umbrella!";
+        console.log(message);
     }
-
-    console.log(message);
 }
+
+if (weatherJson) {
+    const timeSeries = weatherJson.features[0].properties.timeSeries;
+    outputWeather(timeSeries);
+}
+
+
