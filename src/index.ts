@@ -41,5 +41,13 @@ const nextThreeHours = timeSeries
 
 for (const entry of nextThreeHours) {
     const time = new Date(entry.time).toLocaleString("en-GB", { "hour": "numeric", "minute": "2-digit" });
-    console.log(`${time}: ${entry.screenTemperature}°C, ${entry.significantWeatherCode}`);
+    let message: string = `${time}: ${entry.screenTemperature}°C`;
+
+    const weatherCode = entry.significantWeatherCode;
+
+    if (weatherCode >= 9) {
+        message += " - Might be wet so bring an umbrella!";
+    }
+
+    console.log(message);
 }
