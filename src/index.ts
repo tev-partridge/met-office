@@ -1,21 +1,46 @@
 import {env, stdin as input, stdout as output} from 'node:process'
 import * as readline from 'node:readline/promises'
 
-const endpointURL: URL = new URL('https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/hourly')
+const weatherEndpoint: URL = new URL('https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/hourly')
+const postcodeEndpoint: URL = new URL('https://api.postcodes.io/postcodes')
 const API_KEY: string = env.API_KEY ?? ""
 
 const rl = readline.createInterface({input, output});
 
-const latitude: string = await rl.question("Enter latitude: ");
-const longitude: string = await rl.question("Enter longitude: ");
+const postcode: string = await rl.question("Post code: ");
 
 rl.close();
 
-const fetchWeather = async (latitude: string, longitude: string) => {
+const fetchPostcodeData = async (postcode: string) => {
     try {
-        endpointURL.searchParams.set("latitude", latitude);
-        endpointURL.searchParams.set("longitude", longitude);
-        const response = await fetch(endpointURL, {
+        postcodeEndpoint.pathname += `/${postcode}`;
+        const response = await fetch(postcodeEndpoint);
+
+        if (!response.ok) {
+            throw new Error(response.statusText);
+        }
+        const json = await response.json();
+        return {
+            "longitude": json.result.longitude,
+            "latitude": json.result.latitude,
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+const fetchWeather = async (geoData: any) => {
+    try {
+        const latitude: string = geoData.latitude;
+        const longitude: string = geoData.longitude;
+
+        if (!latitude || !longitude) {
+            throw new Error("Invalid parameters");
+        }
+
+        weatherEndpoint.searchParams.set("latitude", latitude);
+        weatherEndpoint.searchParams.set("longitude", longitude);
+        const response = await fetch(weatherEndpoint, {
             headers: {
                 apikey: API_KEY,
                 accept: "application/json",
@@ -29,8 +54,6 @@ const fetchWeather = async (latitude: string, longitude: string) => {
         console.error(e);
     }
 }
-
-const weatherJson = await fetchWeather(latitude, longitude);
 
 const outputWeather = (timeSeries: any) => {
     const now = new Date();
@@ -52,6 +75,8 @@ const outputWeather = (timeSeries: any) => {
     }
 }
 
+const geoData = await fetchPostcodeData(postcode);
+const weatherJson = await fetchWeather(geoData);
 if (weatherJson) {
     const timeSeries = weatherJson.features[0].properties.timeSeries;
     outputWeather(timeSeries);
