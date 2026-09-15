@@ -1,6 +1,6 @@
-# Weather Forecast Application
+# Weather Application Backend
 
-Uses Met Office site-specific forecast data.
+Provides a simple endpoint that returns weather data given a post code, using the Met Office API.
 
 ## Setup
 - Register for an API key on the [Met Office website](https://datahub.metoffice.gov.uk/)
