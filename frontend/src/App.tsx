@@ -23,21 +23,22 @@ function App(): React.ReactElement {
     setPostcode(data.target.value)
   }
   return <>
-    <h1> Met Office Weather </h1>
+    <h1> What is the weather like{placeName ? <span className="place-name"> in {placeName}?</span> : <span>?</span>}</h1>
     <form action="" onSubmit={formHandler}>
       <input type="text" id="postcodeInput" onChange={updatePostcode} placeholder="Enter postcode"/>
       <input type="submit" value="Search" id="postcodeSubmit" />
     </form>
-    {placeName && <h2 className="place-name">{placeName}</h2>}
-    <div className="forecast">
-      {tableData.map((item: any, index: number) => (
-          <React.Fragment key={index}>
-            <div className="forecast-time">{(new Date(item.time)).toLocaleString("en-GB", {"hour": "numeric", "minute": "numeric"})}</div>
-            <div className="forecast-temp">{item.temperature}&deg;</div>
-            <div className="forecast-umbrella">{item.umbrella ? "☂️" : ""}</div>
-          </React.Fragment>
-      ))}
-    </div>
+    {tableData.length > 0 && (
+      <div className="forecast">
+        {tableData.map((item: any, index: number) => (
+            <React.Fragment key={index}>
+              <div className="forecast-time">{(new Date(item.time)).toLocaleString("en-GB", {"hour": "numeric", "minute": "numeric"})}</div>
+              <div className="forecast-temp">{item.temperature}&deg;</div>
+              <div className="forecast-umbrella">{item.umbrella ? "☂️" : ""}</div>
+            </React.Fragment>
+        ))}
+      </div>
+    )}
   </>;
 }
 export default App;

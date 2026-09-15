@@ -43,10 +43,8 @@ form {
 }
 
 .place-name {
-    font-size: 1.5em;
-    font-weight: 600;
-    margin: 24px 0 0;
-    color: #f2f4f7;
+    margin: 5em 0 0;
+    color: red;
 }
 
 .forecast {
@@ -57,7 +55,6 @@ form {
     overflow-x: auto;
     margin: 10px auto 20px auto;
     padding: 24px 28px;
-    min-width: 30em;
     max-width: fit-content;
     background: #1d2939;
     border: 1px solid #344054;
