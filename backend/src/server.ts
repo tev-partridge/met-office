@@ -9,7 +9,7 @@ const API_KEY: string = env.API_KEY ?? "";
 app.get('/api/forecast', async (req: Request, res: Response) => {
     const postcode = req.query.postcode;
     if (typeof postcode !== 'string' || postcode.trim() === '') {
-        res.status(400).json({error: 'postcode query parameter is required'});
+        res.status(400).json({error: 'Missing postcode'});
         return;
     }
 

@@ -1,24 +1,24 @@
 const weatherEndpoint: URL = new URL('https://data.hub.api.metoffice.gov.uk/sitespecific/v0/point/hourly')
 const postcodeEndpoint: URL = new URL('https://api.postcodes.io/postcodes')
 
-export interface LocationInfo {
+interface LocationInfo {
     placeName: string;
     latitude: number;
     longitude: number;
 }
 
-export interface ForecastEntry {
+interface ForecastEntry {
     time: string;
     temperature: number;
-    umbrella: boolean;
+    weatherCode: number;
 }
 
-export interface ForecastResult {
+interface ForecastResult {
     placeName: string;
     forecasts: ForecastEntry[];
 }
 
-export const fetchCoordinates = async (postcode: string): Promise<LocationInfo> => {
+const fetchLocationData = async (postcode: string): Promise<LocationInfo> => {
     const endpoint = new URL(postcodeEndpoint);
     endpoint.pathname += `/${encodeURIComponent(postcode)}`;
     const response = await fetch(endpoint);
@@ -28,13 +28,13 @@ export const fetchCoordinates = async (postcode: string): Promise<LocationInfo> 
     }
     const json = await response.json();
     return {
-        placeName: json.result.bua,
+        placeName: json.result.bua || json.result.admin_ward,
         latitude: json.result.latitude,
         longitude: json.result.longitude,
     };
 }
 
-export const fetchWeather = async (location: LocationInfo, apiKey: string): Promise<any> => {
+const fetchWeather = async (location: LocationInfo, apiKey: string): Promise<any> => {
     const endpoint = new URL(weatherEndpoint);
     endpoint.searchParams.set("latitude", String(location.latitude));
     endpoint.searchParams.set("longitude", String(location.longitude));
@@ -50,7 +50,7 @@ export const fetchWeather = async (location: LocationInfo, apiKey: string): Prom
     return await response.json();
 }
 
-export const getNextThreeHours = (timeSeries: any[]): ForecastEntry[] => {
+const getNextThreeHours = (timeSeries: any[]): ForecastEntry[] => {
     const now = new Date();
     return timeSeries
         .filter((entry: any) => new Date(entry.time) >= now)
@@ -58,12 +58,12 @@ export const getNextThreeHours = (timeSeries: any[]): ForecastEntry[] => {
         .map((entry: any) => ({
             time: entry.time,
             temperature: entry.screenTemperature,
-            umbrella: entry.significantWeatherCode >= 9,
+            weatherCode: entry.significantWeatherCode
         }));
 }
 
 export const getForecastForPostcode = async (postcode: string, apiKey: string): Promise<ForecastResult> => {
-    const location = await fetchCoordinates(postcode);
+    const location = await fetchLocationData(postcode);
     const weatherJson = await fetchWeather(location, apiKey);
     const timeSeries = weatherJson.features[0].properties.timeSeries;
     return {
