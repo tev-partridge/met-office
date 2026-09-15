@@ -1,4 +1,6 @@
 import React, {useState} from 'react';
+import "./App.css"
+
 async function getForecast(postcode: string) {
   const response = await fetch(`/api/forecast?postcode=${encodeURIComponent(postcode)}`);
   if (!response.ok) {
@@ -10,10 +12,12 @@ async function getForecast(postcode: string) {
 function App(): React.ReactElement {
   const [postcode, setPostcode] = useState<string>("");
   const [tableData, setTableData] = useState<any[]>([]);
+  const [placeName, setPlaceName] = useState<string>("");
   async function formHandler(event: React.FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault(); // to stop the form refreshing the page when it submits
     const data = await getForecast(postcode);
-    setTableData(data);
+    setTableData(data.forecasts);
+    setPlaceName(data.placeName);
   }
   function updatePostcode(data: React.ChangeEvent<HTMLInputElement>): void {
     setPostcode(data.target.value)
@@ -21,21 +25,19 @@ function App(): React.ReactElement {
   return <>
     <h1> Met Office Weather </h1>
     <form action="" onSubmit={formHandler}>
-      <label htmlFor="postcodeInput"> Postcode: </label>
-      <input type="text" id="postcodeInput" onChange={updatePostcode}/>
-      <input type="submit" value="Submit"/>
+      <input type="text" id="postcodeInput" onChange={updatePostcode} placeholder="Enter postcode"/>
+      <input type="submit" value="Search" id="postcodeSubmit" />
     </form>
-    <table>
-      <tbody>
-        {tableData.map((item: any, index: number) => (
-            <tr key={index}>
-              <td>{item.time}</td>
-              <td>{item.temperature}</td>
-              <td>{item.umbrella}</td>
-            </tr>
-        ))}
-      </tbody>
-    </table>
+    {placeName && <h2 className="place-name">{placeName}</h2>}
+    <div className="forecast">
+      {tableData.map((item: any, index: number) => (
+          <React.Fragment key={index}>
+            <div className="forecast-time">{(new Date(item.time)).toLocaleString("en-GB", {"hour": "numeric", "minute": "numeric"})}</div>
+            <div className="forecast-temp">{item.temperature}&deg;</div>
+            <div className="forecast-umbrella">{item.umbrella ? "☂️" : ""}</div>
+          </React.Fragment>
+      ))}
+    </div>
   </>;
 }
 export default App;
