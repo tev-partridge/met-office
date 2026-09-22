@@ -1,9 +1,10 @@
 
 form {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 12px;
+    gap: 1em;
 }
 
 #postcodeInput {
@@ -12,7 +13,7 @@ form {
     color: #f2f4f7;
     padding: .6em .8em;
     border-radius: 8px;
-    font-size: 1.5em;
+    font-size: clamp(1rem, 0.75rem + 1.5vw, 1.5rem);
     width: 10em;
     transition: border-color 0.15s ease;
 }
@@ -32,7 +33,7 @@ form {
     color: #fff;
     padding: .6em 1.5em;
     border-radius: 8px;
-    font-size: 1.5em;
+    font-size: clamp(1rem, 0.75rem + 1.5vw, 1.5rem);
     font-weight: 600;
     cursor: pointer;
     transition: background-color 0.15s ease;
@@ -45,6 +46,11 @@ form {
 .place-name {
     margin: 5em 0 0;
     color: red;
+}
+
+.error-message {
+    color: #f04438;
+    text-align: center;
 }
 
 .forecast {
@@ -65,9 +71,10 @@ form {
     font-weight: 500;
     color: #98a2b3;
     padding-bottom: 10px;
+    font-size: clamp(1rem, 0.75rem + 1.5vw, 1.5rem);
 }
 
 .forecast-temp {
-    font-size: 28px;
+    font-size: clamp(1.25rem, 1rem + 3vw, 3rem);
     font-weight: 600;
 }

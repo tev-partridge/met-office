@@ -18,10 +18,9 @@ body {
 
 nav {
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
   justify-content: start;
   align-items: center;
-  width: 100%;
   font-size: 2em;
 }
 
@@ -31,6 +30,11 @@ nav a {
   padding: 10px;
 }
 
+nav a.active {
+  color: #3284c6;
+}
+
 nav a:hover {
   color: #53b1fd;
 }
+

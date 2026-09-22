@@ -18,7 +18,7 @@ app.get('/api/forecast', async (req: Request, res: Response) => {
         res.json({postcode, entries});
     } catch (e) {
         console.error(e);
-        res.status(502).json({error: 'Failed to fetch forecast'});
+        res.status(502).json({error: e instanceof Error ? e.message : ""});
     }
 });
 

@@ -4,27 +4,40 @@ import "./App.css"
 const getForecast = async (postcode: string) => {
   const response = await fetch(`/api/forecast?postcode=${encodeURIComponent(postcode)}`);
   if (!response.ok) {
-    throw new Error(`Failed to fetch forecast: ${response.status}`);
+    const json = await response.json();
+    throw new Error(json.error || `Failed to fetch forecast: ${response.status}`);
   }
   const data = await response.json();
   return data.entries;
+
 }
 
 const App = (): React.ReactElement => {
   const [postcode, setPostcode] = useState<string>("");
   const [tableData, setTableData] = useState<any[]>([]);
   const [placeName, setPlaceName] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   const formHandler = async (event: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
+    if(loading) return;
+
+    setLoading(true);
     try {
+      setErrorMessage("");
+      setTableData([]);
+      setPlaceName("");
       const data = await getForecast(postcode);
       setTableData(data.forecasts);
       setPlaceName(data.placeName);
+      setLoading(false);
     } catch (error) {
       console.error(error);
       setTableData([]);
       setPlaceName("");
+      setLoading(false);
+      setErrorMessage(error instanceof Error ? error.message : "Something went wrong");
     }
   }
 
@@ -38,6 +51,8 @@ const App = (): React.ReactElement => {
       <input type="text" id="postcodeInput" onChange={updatePostcode} placeholder="Enter postcode"/>
       <input type="submit" value="Search" id="postcodeSubmit" />
     </form>
+    {errorMessage && <p className="error-message">{errorMessage}</p>}
+    {loading && <p>Loading...</p>}
     {tableData.length > 0 && (
       <div className="forecast">
         {tableData.map((item: any, index: number) => {

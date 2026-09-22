@@ -24,7 +24,8 @@ const fetchLocationData = async (postcode: string): Promise<LocationInfo> => {
     const response = await fetch(endpoint);
 
     if (!response.ok) {
-        throw new Error(`Postcode lookup failed: ${response.statusText}`);
+        const json = await response.json();
+        throw new Error(`Postcode lookup failed: ${json.error}`);
     }
     const json = await response.json();
     return {
