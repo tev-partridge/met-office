@@ -50,7 +50,7 @@ form {
 .forecast {
     display: grid;
     grid-auto-flow: column;
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto auto;
     gap: 12px 28px;
     overflow-x: auto;
     margin: 10px auto 20px auto;
@@ -70,8 +70,4 @@ form {
 .forecast-temp {
     font-size: 28px;
     font-weight: 600;
-}
-
-.forecast-umbrella {
-    font-size: 20px;
 }
