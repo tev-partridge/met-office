@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import "./App.css"
 
-async function getForecast(postcode: string) {
+const getForecast = async (postcode: string) => {
   const response = await fetch(`/api/forecast?postcode=${encodeURIComponent(postcode)}`);
   if (!response.ok) {
     throw new Error(`Failed to fetch forecast: ${response.status}`);
@@ -10,11 +10,12 @@ async function getForecast(postcode: string) {
   return data.entries;
 }
 
-function App(): React.ReactElement {
+const App = (): React.ReactElement => {
   const [postcode, setPostcode] = useState<string>("");
   const [tableData, setTableData] = useState<any[]>([]);
   const [placeName, setPlaceName] = useState<string>("");
-  async function formHandler(event: React.SubmitEvent<HTMLFormElement>): Promise<void> {
+
+  const formHandler = async (event: React.SubmitEvent<HTMLFormElement>): Promise<void> => {
     event.preventDefault();
     try {
       const data = await getForecast(postcode);
@@ -26,9 +27,11 @@ function App(): React.ReactElement {
       setPlaceName("");
     }
   }
-  function updatePostcode(data: React.ChangeEvent<HTMLInputElement>): void {
+
+  const updatePostcode = (data: React.ChangeEvent<HTMLInputElement>): void => {
     setPostcode(data.target.value)
   }
+
   return <>
     <h1> What is the weather like{placeName ? <span className="place-name"> in {placeName}?</span> : <span>?</span>}</h1>
     <form action="" onSubmit={formHandler}>
